@@ -1,10 +1,17 @@
 import { PageObject } from "./PageObject";
 import config from "../playwright.config";
-import { Page, BrowserContext } from "@playwright/test";
+import { Locator, Page, BrowserContext } from "@playwright/test";
 import { secureClick } from "../helpers/Functions";
 
 export default class Account implements PageObject {
   private page: Page;
+  private pageContext: Locator;
+  private formLoginMail: Locator;
+  private accountIcon: Locator;
+  private fieldEmailInput: Locator;
+  private fieldPasswordInput: Locator;
+  private buttonLogin: Locator;
+  private stateErrorPassword: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,6 +26,13 @@ export default class Account implements PageObject {
   public async initialize(): Promise<void> {
     // Function to be executed first
     console.log("-> handle Account");
+    this.pageContext = this.elements.pageContext();
+    this.formLoginMail = this.elements.formLoginMail();
+    this.accountIcon = this.elements.accountIcon();
+    this.fieldEmailInput = this.elements.fieldEmailInput();
+    this.fieldPasswordInput = this.elements.fieldPasswordInput();
+    this.buttonLogin = this.elements.buttonLogin();
+    this.stateErrorPassword = this.elements.stateErrorPassword();
   }
 
   /** cssPathes: CSS-Selectors */
@@ -58,6 +72,11 @@ export default class Account implements PageObject {
       console.log("-> clickIcon");
       // await GlobalFunctions.secureClick(this.cssPathes.accountIcon);
       await this.elements.accountIcon().click();
+    },
+    clickLogin: async () => {
+      console.log("-> clickLogin");
+      // await GlobalFunctions.secureClick(this.cssPathes.buttonLogin);
+      await this.elements.buttonLogin().click();
     },
   };
 
