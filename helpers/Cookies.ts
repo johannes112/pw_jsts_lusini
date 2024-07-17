@@ -1,34 +1,49 @@
 import config from "../playwright.config";
-import GlobalFunctions from "./Functions";
+import { BrowserContext } from "@playwright/test";
+import { getCurrentDate } from "./Functions";
 
 export default class Cookies {
-  // Access the baseURL from the configuration
+  private context: BrowserContext;
 
-  static setCookies(context) {
-    console.log("-> setCookies");
-    const cookies = {
-      b2b: {
-        name: "channel",
-        value: "de-de_b2b",
-        url: config.use?.baseURL,
-      },
-      b2c: {
-        name: "channel",
-        value: "de-de_b2c",
-        url: config.use?.baseURL,
-      },
-      cookieBanner: {
-        name: "OptanonAlertBoxClosed",
-        value: GlobalFunctions.getCurrentDate(),
-        url: config.use?.baseURL,
-      },
+  constructor(contextCur) {
+    console.log("-> Cookies");
+    this.context = contextCur;
+  }
+  // values for cookies
+  private cookies: {
+    [key: string]: {
+      name: string;
+      value: string;
+      url: string | undefined;
     };
+  } = {
+    b2b: {
+      name: "channel",
+      value: "de-de_b2b",
+      url: config.use?.baseURL,
+    },
+    b2c: {
+      name: "channel",
+      value: "de-de_b2c",
+      url: config.use?.baseURL,
+    },
+    cookieBanner: {
+      name: "OptanonAlertBoxClosed",
+      value: getCurrentDate(),
+      url: config.use?.baseURL,
+    },
+  };
 
-    return {
-      setB2b: async () => await context.addCookies([cookies.b2b]),
-      setB2c: async () => await context.addCookies([cookies.b2c]),
-      closeCookieBanner: async () =>
-        await context.addCookies([cookies.cookieBanner]),
-    };
+  async setB2b() {
+    console.log("-> setB2b");
+    await this.context.addCookies([this.cookies.b2b]);
+  }
+  async setB2c() {
+    console.log("-> setB2c");
+    await this.context.addCookies([this.cookies.b2c]);
+  }
+  async closeCookieBanner() {
+    console.log("-> setCookieBanner");
+    await this.context.addCookies([this.cookies.cookieBanner]);
   }
 }
