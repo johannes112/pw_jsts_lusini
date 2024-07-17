@@ -26,9 +26,10 @@ export async function secureClick(
     } catch (error) {
       console.warn(`>>> Error clicking on ${selector}:`, error);
       // Set cookies to close the cookie banner and refresh the page
-      // Cookies.setCookies(this.page.context()).setB2b();
-      await cookies.setB2b();
-      await cookies.setCookies(page.context()).closeCookieBanner();
+      if (cookies) {
+        await cookies.setB2b();
+        await cookies.setCookies(page.context()).closeCookieBanner();
+      }
       // this.cookies.setCookies(this.page.context()).closeCookieBanner();
       if (attempts > 1) {
         await page.reload();
