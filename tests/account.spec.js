@@ -1,6 +1,6 @@
 import AccountPage from "../pages/AccountPage";
-import GlobalFunctions from "../helpers/Functions.js";
-import Cookies from "../helpers/Cookies";
+import { secureClick } from "../helpers/Functions.js";
+import CookiesHelperClass from "../helpers/Cookies";
 import config from "../playwright.config";
 const { chromium } = require("playwright");
 import { users } from "../data/users.json";
@@ -9,7 +9,7 @@ import { beforeAll } from "@playwright/test";
 import { afterAll } from "@playwright/test";
 
 test.describe("template account", () => {
-  let browser, page, context, account, pageElements, cookies;
+  let browser, page, context, account, pageElements, cookiesCl, cookies;
 
   beforeAll(async () => {
     browser = await chromium.launch();
@@ -17,9 +17,10 @@ test.describe("template account", () => {
     page = await context.newPage();
     account = new AccountPage(page); // Assuming 'page' is defined and is an instance of Playwright's Page
     pageElements = account.elements;
+    cookiesCl = new CookiesHelperClass(context);
     // set Cookies
-    await Cookies.setCookies(context).setB2c();
-    await Cookies.setCookies(context).closeCookieBanner();
+    await cookiesCl.setB2c();
+    await cookiesCl.closeCookieBanner();
 
     // Get cookies from the current context
     cookies = await context.cookies();
@@ -31,7 +32,7 @@ test.describe("template account", () => {
     // const cookies = await context.cookies();
     // console.log(cookies);
     // console.log("AllCookies after afterAll:", cookies);
-    await browser.close();
+    //await browser.close();
   });
 
   test("navigates to account-url when user click to the account-icon", async () => {
@@ -41,7 +42,7 @@ test.describe("template account", () => {
       config.use.baseURL + account.urls.accountLogin
     );
     // click on the account-icon
-    await GlobalFunctions.secureClick(page, account.cssPathes.accountIcon);
+    await secureClick(page, context, account.cssPathes.accountIcon);
     // await GlobalFunctions.secureClick(account.elements.accountIcon());
     await page.waitForURL(config.use.baseURL + account.urls.accountLogin, {
       // Ensure consistent variable name

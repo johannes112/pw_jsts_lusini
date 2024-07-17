@@ -1,7 +1,7 @@
 import { PageObject } from "./PageObject";
 import config from "../playwright.config";
-import { Page } from "@playwright/test";
-import GlobalFunctions from "../helpers/Functions";
+import { Page, BrowserContext } from "@playwright/test";
+import { secureClick } from "../helpers/Functions";
 
 export default class Account implements PageObject {
   private page: Page;
@@ -51,7 +51,8 @@ export default class Account implements PageObject {
       console.log("-> fillLoginForm");
       await this.page.fill(this.cssPathes.fieldEmailInput, user.email);
       await this.page.fill(this.cssPathes.fieldPasswordInput, user.password);
-      await GlobalFunctions.secureClick(this.page, this.cssPathes.buttonLogin);
+      // await secureClick(this.page, this.cssPathes.buttonLogin);
+      await this.elements.buttonLogin().click();
     },
     clickIcon: async () => {
       console.log("-> clickIcon");
