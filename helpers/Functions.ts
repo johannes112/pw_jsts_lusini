@@ -1,17 +1,17 @@
 // get current date -> for cookie
-export function getCurrentDate() {
+export function getCurrentDate(): string {
   const date = new Date();
-  const isoDate = date.toISOString();
+  const isoDate: string = date.toISOString();
   return isoDate;
 }
 
 // set a cookie and retry it
 export async function secureClick(
-  page,
-  cookies,
-  selector,
+  page: any,
+  selector: string,
+  cookies: any,
   options = { retry: 2 }
-) {
+): Promise<boolean> {
   let attempts = 0;
   while (attempts < options.retry) {
     try {
