@@ -42,7 +42,7 @@ test.describe("template account", () => {
       config.use.baseURL + account.urls.accountLogin
     );
     // click on the account-icon
-    await secureClick(page, context, account.cssPathes.accountIcon);
+    await secureClick(page, account.cssPathes.accountIcon);
     // await GlobalFunctions.secureClick(account.elements.accountIcon());
     await page.waitForURL(config.use.baseURL + account.urls.accountLogin, {
       // Ensure consistent variable name
