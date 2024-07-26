@@ -1,10 +1,14 @@
+// Do not use assertions in the page object. Instead, use assertions in the test file.
 import { PageObject } from "./PageObject";
 import config from "../playwright.config";
-import { Locator, Page, BrowserContext } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
+import CustomCookies from "../helpers/Cookies";
 import { secureClick } from "../helpers/Functions";
 
 export default class Account implements PageObject {
+  private errorMessage: string;
   private page: Page;
+  private customCookies: CustomCookies;
   private pageContext: Locator;
   private formLoginMail: Locator;
   private accountIcon: Locator;
@@ -15,10 +19,12 @@ export default class Account implements PageObject {
 
   constructor(page: Page) {
     this.page = page;
+    this.customCookies = new CustomCookies(this.page.context());
     this.initialize();
   }
 
-  // Add the following method to match the interface signature
+  // static method to create instance of Account class
+  // a: Because we can create an instance of the class without creating an object
   static new(page: Page): Account {
     return new Account(page);
   }
@@ -33,6 +39,15 @@ export default class Account implements PageObject {
     this.fieldPasswordInput = this.elements.fieldPasswordInput();
     this.buttonLogin = this.elements.buttonLogin();
     this.stateErrorPassword = this.elements.stateErrorPassword();
+  }
+
+  // setter for errorMessage
+  setErrorMessage(message: string): void {
+    this.errorMessage = message;
+  }
+  // getter for errorMessage
+  getErrorMessage(): string {
+    return this.errorMessage;
   }
 
   /** cssPathes: CSS-Selectors */
@@ -61,34 +76,37 @@ export default class Account implements PageObject {
 
   /** actions: Multisteps (related) */
   actions = {
-    loginAsUser: async (user) => {
+    insertUserData: async (user) => {
       console.log("-> fillLoginForm");
       await this.page.fill(this.cssPathes.fieldEmailInput, user.email);
       await this.page.fill(this.cssPathes.fieldPasswordInput, user.password);
       // await secureClick(this.page, this.cssPathes.buttonLogin);
-      await this.elements.buttonLogin().click();
+      // await this.elements.buttonLogin().click();
+      this.actions.clickLoginButton();
     },
     clickIcon: async () => {
       console.log("-> clickIcon");
       // await GlobalFunctions.secureClick(this.cssPathes.accountIcon);
       await this.elements.accountIcon().click();
     },
-    clickLogin: async () => {
+    clickLoginButton: async () => {
       console.log("-> clickLogin");
       // await GlobalFunctions.secureClick(this.cssPathes.buttonLogin);
       await this.elements.buttonLogin().click();
     },
-  };
-
-  /** assertions: Single steps */
-  assertions = {
-    assertLoginFormVisible: async () => {
-      console.log("-> assertLoginFormVisible");
-      await this.elements.formLoginMail().isVisible();
+    waitForLoginUrl: async () => {
+      console.log("-> waitForLoginUrl");
+      if (config.use?.baseURL == undefined) {
+        console.log(">> BaseURL is not defined in config.");
+      }
+      await this.page.waitForURL(config.use?.baseURL + this.urls.accountLogin, {
+        // Ensure consistent variable name
+        timeout: 2000,
+      });
     },
-    assertErrorPasswordVisible: async () => {
-      console.log("-> assertErrorPasswordVisible");
-      await this.elements.stateErrorPassword().isVisible();
+    clickToIcon: async () => {
+      console.log("-> clickToIcon");
+      await secureClick(this.page, this.cssPathes.accountIcon);
     },
   };
 
