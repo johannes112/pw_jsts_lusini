@@ -2,15 +2,15 @@ import config from "../playwright.config";
 import { BrowserContext } from "@playwright/test";
 import { getCurrentDate } from "./Functions";
 
-export default class Cookies {
+export default class CustomCookies {
   private context: BrowserContext;
 
   constructor(contextCur) {
-    console.log("-> Cookies");
+    console.log("-> CustomCookies");
     this.context = contextCur;
   }
-  // values for cookies
-  private cookies: {
+  // values for customCookies
+  private customCookies: {
     [key: string]: {
       name: string;
       value: string;
@@ -18,13 +18,13 @@ export default class Cookies {
     };
   } = {
     b2b: {
-      name: "channel",
-      value: "de-de_b2b",
+      name: "de-de-channel",
+      value: "b2b",
       url: config.use?.baseURL,
     },
     b2c: {
-      name: "channel",
-      value: "de-de_b2c",
+      name: "de-de-channel",
+      value: "b2c",
       url: config.use?.baseURL,
     },
     cookieBanner: {
@@ -36,14 +36,19 @@ export default class Cookies {
 
   async setB2b() {
     console.log("-> setB2b");
-    await this.context.addCookies([this.cookies.b2b]);
+    await this.context.addCookies([this.customCookies.b2b]);
   }
   async setB2c() {
     console.log("-> setB2c");
-    await this.context.addCookies([this.cookies.b2c]);
+    await this.context.addCookies([this.customCookies.b2c]);
   }
   async closeCookieBanner() {
     console.log("-> setCookieBanner");
-    await this.context.addCookies([this.cookies.cookieBanner]);
+    await this.context.addCookies([this.customCookies.cookieBanner]);
+  }
+
+  async showAllCookies() {
+    console.log("-> showAllCookies");
+    console.log(await this.context.cookies());
   }
 }
