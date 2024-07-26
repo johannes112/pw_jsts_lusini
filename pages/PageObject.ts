@@ -11,9 +11,7 @@ export interface PageObject {
   actions: {
     [key: string]: (...args: any[]) => Promise<void>; // Adjust the return type as necessary
   };
-  assertions: {
-    [key: string]: (...args: any[]) => Promise<void>; // Adjust the return type as necessary
-  };
+
   urls: {
     [key: string]: string | undefined;
   };
