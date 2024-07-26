@@ -1,3 +1,5 @@
+import CustomCookies from "./Cookies";
+
 // get current date -> for cookie
 export function getCurrentDate(): string {
   const date = new Date();
@@ -9,13 +11,16 @@ export function getCurrentDate(): string {
 export async function secureClick(
   page: any,
   selector: string,
-  cookies: any,
-  options = { retry: 2 }
+  options = { retry: 3 }
 ): Promise<boolean> {
   let attempts = 0;
+  let customCookies = new CustomCookies(page.context());
   while (attempts < options.retry) {
+    // Set cookies to close the cookie banner and refresh the page
+    // const customCookies = new CustomCookies(context);
     try {
       console.log("> secureClick");
+      console.log("page: ", page);
       console.log(`Attempt to click on ${selector}, try #${attempts + 1}`);
       const element = await page.locator(selector);
       console.log(">> Got the element: ", element);
@@ -24,19 +29,14 @@ export async function secureClick(
       console.log(`>> Clicked on ${selector} successfully.`);
       return true;
     } catch (error) {
+      await customCookies.setB2c();
+      await customCookies.closeCookieBanner();
       console.warn(`>>> Error clicking on ${selector}:`, error);
-      // Set cookies to close the cookie banner and refresh the page
-      if (cookies) {
-        await cookies.setB2b();
-        await cookies.setCookies(page.context()).closeCookieBanner();
-      }
-      // this.cookies.setCookies(this.page.context()).closeCookieBanner();
-      if (attempts > 1) {
+      if (attempts >= 0) {
         await page.reload();
       }
       // Increment the attempt counter
-      attempts++;
-      // Optionally, wait a bit before retrying (e.g., 500ms)
+      attempts++; // Optionally, wait a bit before retrying (e.g., 500ms)
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
