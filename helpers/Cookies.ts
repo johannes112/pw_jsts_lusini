@@ -1,12 +1,13 @@
 import config from "../playwright.config";
-import { BrowserContext } from "@playwright/test";
+import { BrowserContext, Page } from "@playwright/test";
 import { getCurrentDate } from "./Functions";
 
 export default class CustomCookies {
   private context: BrowserContext;
 
-  constructor(contextCur) {
+  constructor(contextCur: BrowserContext) {
     console.log("-> CustomCookies");
+    console.log(contextCur);
     this.context = contextCur;
   }
   // values for customCookies
@@ -18,12 +19,12 @@ export default class CustomCookies {
     };
   } = {
     b2b: {
-      name: "de-de-channel",
+      name: "de-channel",
       value: "b2b",
       url: config.use?.baseURL,
     },
     b2c: {
-      name: "de-de-channel",
+      name: "de-channel",
       value: "b2c",
       url: config.use?.baseURL,
     },

@@ -1,7 +1,7 @@
 import { chromium } from "playwright";
 import CustomCookies from "../../helpers/Cookies"; // Adjust the import path as needed
 
-let browser, page, context;
+let browser, context, page;
 /** globalSetup
  * use this always to have the same setup for all tests
  * - launch browser
@@ -11,13 +11,17 @@ let browser, page, context;
  * - close cookie banner
  */
 async function globalSetup() {
+  console.log("TEST globalSetup");
   browser = await chromium.launch();
   context = await browser.newContext();
   page = await context.newPage();
+  const pageContext = page.context();
+  console.log("Page context:", pageContext);
   // Set Cookies
-  const customCookies = new CustomCookies(page);
+  const customCookies = new CustomCookies(pageContext);
   await customCookies.setB2c();
   await customCookies.closeCookieBanner();
+  await customCookies.showAllCookies();
 }
 
 /** globalTeardowm
@@ -32,4 +36,4 @@ async function globalTeardown() {
   await browser.close();
 }
 
-export { browser, page, context, globalSetup };
+export { browser, page, context, globalSetup, globalTeardown };
