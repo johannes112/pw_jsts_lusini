@@ -1,15 +1,34 @@
 import config from "../playwright.config";
-import { BrowserContext, Page } from "@playwright/test";
+import { BrowserContext } from "@playwright/test";
 import { getCurrentDate } from "./Functions";
 
+/** CustomCookies
+ * description: Class to handle custom cookies
+ * - add new cookies
+ * - show all cookies
+ * args: contextCur: BrowserContext
+ * actions: setB2b, setB2c, closeCookieBanner, showAllCookies
+ */
 export default class CustomCookies {
   private context: BrowserContext;
+  private existingCookies: any[] = [];
 
   constructor(contextCur: BrowserContext) {
     console.log("-> CustomCookies");
-    console.log(contextCur);
     this.context = contextCur;
   }
+
+  // set existing cookies
+  async setExistingCookies(cookie: any) {
+    console.log("-> setExistingCookies");
+    this.existingCookies.push(cookie);
+  }
+  // get existing cookies
+  async getExistingCookies() {
+    console.log("-> getExistingCookies");
+    return this.existingCookies;
+  }
+
   // values for customCookies
   private customCookies: {
     [key: string]: {
@@ -37,7 +56,8 @@ export default class CustomCookies {
 
   async setB2b() {
     console.log("-> setB2b");
-    await this.context.addCookies([this.customCookies.b2b]);
+    (await !this.isCookieAlreadyExisting(this.customCookies.b2b)) &&
+      (await this.context.addCookies([this.customCookies.b2b]));
   }
   async setB2c() {
     console.log("-> setB2c");
@@ -48,8 +68,22 @@ export default class CustomCookies {
     await this.context.addCookies([this.customCookies.cookieBanner]);
   }
 
+  // check if cookie already exists in getExistingCookies
+  async isCookieAlreadyExisting(cookie: any) {
+    console.log("-> checkCookieExists");
+    const existingCookies = await this.getExistingCookies();
+    const cookieExists = existingCookies.find(
+      (existingCookie) => existingCookie.name === cookie.name
+    );
+    return true;
+  }
+
   async showAllCookies() {
     console.log("-> showAllCookies");
-    console.log(await this.context.cookies());
+    const cookies = await this.context.cookies();
+    cookies.forEach((cookie) => {
+      console.log(`Name: ${cookie.name}, Value: ${cookie.value}`);
+      this.setExistingCookies(cookie);
+    });
   }
 }
