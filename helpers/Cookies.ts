@@ -10,12 +10,21 @@ import { getCurrentDate } from "./Functions";
  * actions: setB2b, setB2c, closeCookieBanner, showAllCookies
  */
 export default class CustomCookies {
+  private static instance: CustomCookies;
   private context: BrowserContext;
   private existingCookies: any[] = [];
 
-  constructor(contextCur: BrowserContext) {
+  private constructor(contextCur: BrowserContext) {
     console.log("-> CustomCookies");
     this.context = contextCur;
+  }
+
+  // Static method to get the single instance of the class
+  public static getInstance(contextCur: BrowserContext): CustomCookies {
+    if (!CustomCookies.instance) {
+      CustomCookies.instance = new CustomCookies(contextCur);
+    }
+    return CustomCookies.instance;
   }
 
   // set existing cookies
@@ -56,8 +65,8 @@ export default class CustomCookies {
 
   async setB2b() {
     console.log("-> setB2b");
-    (await !this.isCookieAlreadyExisting(this.customCookies.b2b)) &&
-      (await this.context.addCookies([this.customCookies.b2b]));
+    // (await !this.isCookieAlreadyExisting(this.customCookies.b2b)) &&
+    await this.context.addCookies([this.customCookies.b2b]);
   }
   async setB2c() {
     console.log("-> setB2c");
@@ -68,19 +77,13 @@ export default class CustomCookies {
     await this.context.addCookies([this.customCookies.cookieBanner]);
   }
 
-  // check if cookie already exists in getExistingCookies
-  async isCookieAlreadyExisting(cookie: any) {
-    console.log("-> checkCookieExists");
-    const existingCookies = await this.getExistingCookies();
-    const cookieExists = existingCookies.find(
-      (existingCookie) => existingCookie.name === cookie.name
-    );
-    return true;
-  }
-
   async showAllCookies() {
     console.log("-> showAllCookies");
     const cookies = await this.context.cookies();
+    if (cookies.length === 0) {
+      console.log(">>> No cookies found");
+      return;
+    }
     cookies.forEach((cookie) => {
       console.log(`Name: ${cookie.name}, Value: ${cookie.value}`);
       this.setExistingCookies(cookie);
