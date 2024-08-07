@@ -19,7 +19,7 @@ export default class Account implements PageObject {
 
   constructor(page: Page) {
     this.page = page;
-    this.customCookies = new CustomCookies(this.page.context());
+    // this.customCookies = new CustomCookies(this.page.context());
     this.initialize();
   }
 
