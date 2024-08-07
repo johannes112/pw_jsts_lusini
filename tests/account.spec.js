@@ -1,4 +1,4 @@
-import { globalSetup } from "./fixtures/globalSetup"; // Adjust the import path as needed
+// import { globalSetup } from "./fixtures/globalSetup"; // Adjust the import path as needed
 
 import config from "../playwright.config";
 import { users } from "../data/users.json";
@@ -7,16 +7,30 @@ import { test, expect } from "./fixtures/testObjects.js";
 import CustomCookies from "../helpers/Cookies";
 
 test.describe("template accountPage", () => {
+  test.skip("test cookies", async ({ accountPage, page }) => {
+    const customCookies = new CustomCookies(page.context());
+    await customCookies.setB2b();
+    await customCookies.closeCookieBanner();
+    await page.goto("/");
+    await customCookies.showAllCookies();
+    await accountPage.elements.accountIcon().click();
+    // await customCookies.showAllCookies();
+  });
   test("navigates to accountPage-url when user click to the accountPage-icon", async ({
     accountPage,
     page,
   }) => {
+    // const customCookies = new CustomCookies(page.context());
+    const customCookies = CustomCookies.getInstance(page.context());
+    await customCookies.setB2c();
+    await customCookies.closeCookieBanner();
     // make all single actions and assertions in the testfile
     await page.goto("/");
     // negative test
     await expect(page.url()).not.toBe(
       config.use.baseURL + accountPage.urls.accountLogin
     );
+    customCookies.showAllCookies();
     // click on the accountPage-icon
     await accountPage.actions.clickToIcon();
     // wait for the accountpage
@@ -31,6 +45,9 @@ test.describe("template accountPage", () => {
     accountPage,
     page,
   }) => {
+    const customCookies = new CustomCookies(page.context());
+    await customCookies.setB2c();
+    await customCookies.closeCookieBanner();
     // negative test
     await expect(accountPage.elements.pageContext()).not.toBeVisible();
     // visit the accountpage
@@ -42,6 +59,9 @@ test.describe("template accountPage", () => {
     accountPage,
     page,
   }) => {
+    const customCookies = new CustomCookies(page.context());
+    await customCookies.setB2c();
+    await customCookies.closeCookieBanner();
     // negative test
     await expect(accountPage.elements.formLoginMail()).not.toBeVisible();
     // visit the accountpage
@@ -53,6 +73,9 @@ test.describe("template accountPage", () => {
     accountPage,
     page,
   }) => {
+    const customCookies = new CustomCookies(page.context());
+    await customCookies.setB2c();
+    await customCookies.closeCookieBanner();
     // visit the accountpage
     await page.goto(accountPage.urls.accountLogin);
 
