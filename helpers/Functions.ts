@@ -14,7 +14,8 @@ export async function secureClick(
   options = { retry: 3 }
 ): Promise<boolean> {
   let attempts = 0;
-  let customCookies = new CustomCookies(page.context());
+  // let customCookies = new CustomCookies(page.context());
+  const customCookies = CustomCookies.getInstance(page.context());
   while (attempts < options.retry) {
     // Set cookies to close the cookie banner and refresh the page
     // const customCookies = new CustomCookies(context);
@@ -31,7 +32,7 @@ export async function secureClick(
     } catch (error) {
       await customCookies.setB2c();
       await customCookies.closeCookieBanner();
-      console.warn(`>>> Error clicking on ${selector}:`, error);
+      console.warn(`>>> Error clicking on ${selector}:`, error.message);
       if (attempts >= 0) {
         await page.reload();
       }
