@@ -7,7 +7,7 @@ import { getCurrentDate } from "./Functions";
  * - add new cookies
  * - show all cookies
  * args: contextCur: BrowserContext
- * actions: setB2b, setB2c, closeCookieBanner, showAllCookies
+ * actions: setB2b, setB2c, closeCookieBanner, showAllExistingCookiesOfCurrentPage
  */
 export default class CustomCookies {
   private static instance: CustomCookies;
@@ -15,7 +15,7 @@ export default class CustomCookies {
   private existingCookies: any[] = [];
 
   private constructor(contextCur: BrowserContext) {
-    console.log("-> CustomCookies");
+    console.log("> CustomCookies");
     this.context = contextCur;
   }
 
@@ -24,6 +24,7 @@ export default class CustomCookies {
     if (!CustomCookies.instance) {
       CustomCookies.instance = new CustomCookies(contextCur);
     }
+    console.log(`>> CustomCookies.instance: ${CustomCookies.instance}`);
     return CustomCookies.instance;
   }
 
@@ -66,27 +67,56 @@ export default class CustomCookies {
   async setB2b() {
     console.log("-> setB2b");
     // (await !this.isCookieAlreadyExisting(this.customCookies.b2b)) &&
-    await this.context.addCookies([this.customCookies.b2b]);
+    await this.createCookie([this.customCookies.b2b]);
   }
   async setB2c() {
     console.log("-> setB2c");
-    await this.context.addCookies([this.customCookies.b2c]);
+    await this.createCookie([this.customCookies.b2c]);
   }
   async closeCookieBanner() {
     console.log("-> setCookieBanner");
-    await this.context.addCookies([this.customCookies.cookieBanner]);
+    await this.createCookie([this.customCookies.cookieBanner]);
   }
 
-  async showAllCookies() {
-    console.log("-> showAllCookies");
+  async createCookie(cookieContent) {
+    console.log("-> createCookie");
+    await this.context.addCookies(cookieContent);
+  }
+
+  async showAllExistingCookiesOfCurrentPage() {
+    console.log("-> showAllExistingCookiesOfCurrentPage");
     const cookies = await this.context.cookies();
     if (cookies.length === 0) {
       console.log(">>> No cookies found");
       return;
     }
     cookies.forEach((cookie) => {
-      console.log(`Name: ${cookie.name}, Value: ${cookie.value}`);
+      console.log(`>> Name: ${cookie.name}, Value: ${cookie.value}`);
       this.setExistingCookies(cookie);
     });
+  }
+
+  async isCookieAlreadyExistingInMyVariables() {
+    console.log("-> isCookieAlreadyExisting");
+    await this.showAllExistingCookiesOfCurrentPage();
+    const allExistingCookiesOfCurrentPage = await this.getExistingCookies();
+    // loop through all existing cookies
+    for (let i = 0; i < allExistingCookiesOfCurrentPage.length; i++) {
+      console.log(
+        `>> Cookie: ${allExistingCookiesOfCurrentPage[i].name}, Value: ${allExistingCookiesOfCurrentPage[i].value}`
+      );
+      if (
+        // search for the name of the cookie in the object
+        allExistingCookiesOfCurrentPage.find(
+          (cookie) => cookie.value === Object.keys(this.customCookies)[i]
+        )
+      ) {
+        console.log(">>> Cookie is already existing.");
+        return true;
+      } else {
+        console.log(">>> Cookie is not existing.");
+        return false;
+      }
+    }
   }
 }
