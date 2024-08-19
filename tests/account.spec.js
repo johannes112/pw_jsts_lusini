@@ -1,5 +1,3 @@
-// import { globalSetup } from "./fixtures/globalSetup"; // Adjust the import path as needed
-
 import config from "../playwright.config";
 import { users } from "../data/users.json";
 // import { test, expect } from "@playwright/test";
@@ -10,11 +8,10 @@ test.describe("template accountPage", () => {
   test.skip("test cookies", async ({ accountPage, page }) => {
     const customCookies = new CustomCookies(page.context());
     await customCookies.setB2b();
-    await customCookies.closeCookieBanner();
+    // await customCookies.closeCookieBanner();
     await page.goto("/");
-    await customCookies.showAllCookies();
-    await accountPage.elements.accountIcon().click();
-    // await customCookies.showAllCookies();
+    // await customCookies.showAllExistingCookiesOfCurrentPage();
+    await customCookies.isCookieAlreadyExistingInMyVariables();
   });
   test("navigates to accountPage-url when user click to the accountPage-icon", async ({
     accountPage,
@@ -30,7 +27,7 @@ test.describe("template accountPage", () => {
     await expect(page.url()).not.toBe(
       config.use.baseURL + accountPage.urls.accountLogin
     );
-    customCookies.showAllCookies();
+    customCookies.showAllExistingCookiesOfCurrentPage();
     // click on the accountPage-icon
     await accountPage.actions.clickToIcon();
     // wait for the accountpage
