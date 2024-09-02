@@ -11,3 +11,7 @@ LANGUAGE=$2
 
 # copy the config file to the root directory
 cp ./data/config/$SHOP/$LANGUAGE/index.ts ./data/config
+
+# call the start.sh script
+bash start.sh
+
