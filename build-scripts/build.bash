@@ -1,26 +1,13 @@
 #!/bin/bash
-# This script is used to build the project.
+# This script is used to build the configuration.
+# How to run this script: ./build-scripts/build.bash shop language
+# Example: bash build-scripts/build.bash lusini de
 
 # get all the arguments passed to the script
 # shop
-shop=$1
+SHOP=$1
 # language
 LANGUAGE=$2
 
-# get the url from the config
-# npm install -D ts-node
-# Extract the baseURL from playwright.config.json
-BASE_URL=$(npx ts-node ./build-scripts/getBaseUrl.ts)
-
-# get the lang attribute from the BASE_URL      
-# Fetch the HTML content and extract the lang attribute
-LANG_ATTRIBUTE=$(curl -s $BASE_URL | sed -n "s/.*const country = '\([^']*\)'.*/\1/p")
-echo "started server of: $LANG_ATTRIBUTE"
-
-# compare the first argument with lang attribute and if it matches the start the tests if it is not equal then put a message
-if [ "$LANGUAGE" = "$LANG_ATTRIBUTE" ]; then
-    echo "Starting the tests"
-    npx playwright test --ui
-else
-    echo "The wrong shop >$LANGUAGE< is started. Please start the >$LANG_ATTRIBUTE< shop."
-fi
+# copy the config file to the root directory
+cp ./data/config/$SHOP/$LANGUAGE/index.ts ./data/config
