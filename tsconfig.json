@@ -4,6 +4,10 @@
     "module": "CommonJS",
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      // set the root path to the default import folder?
+      "/*": ["./*"] // Default path mapping
+    }
   }
 }
