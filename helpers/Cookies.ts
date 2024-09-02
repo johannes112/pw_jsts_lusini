@@ -1,4 +1,5 @@
 import config from "../playwright.config";
+import { baseUrl } from "../data/config/index";
 import { BrowserContext } from "@playwright/test";
 import { getCurrentDate } from "./Functions";
 
@@ -50,17 +51,17 @@ export default class CustomCookies {
     b2b: {
       name: "de-channel",
       value: "b2b",
-      url: config.use?.baseURL,
+      url: baseUrl,
     },
     b2c: {
       name: "de-channel",
       value: "b2c",
-      url: config.use?.baseURL,
+      url: baseUrl,
     },
     cookieBanner: {
       name: "OptanonAlertBoxClosed",
       value: getCurrentDate(),
-      url: config.use?.baseURL,
+      url: baseUrl,
     },
   };
 
