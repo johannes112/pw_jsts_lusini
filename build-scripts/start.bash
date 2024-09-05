@@ -1,11 +1,25 @@
 #!/bin/bash
-# This script is used to build the project.
+# description: This script is used to build the project. it depends on the of the arg 'language' given by build.bash
+# trigger: build-scripts/start.bash
+# arguments: language (env variable)
+# action: start the playwright tests
+# return: msg if the test is started or something is missing
+# author: jl
+# date: 2024-09-01
+# version: 1.0.0
+# example: bash build-scripts/start.bash de-DE                  
 
-# get all the arguments passed to the script
-# shop
-SHOP=$1
-# language
-LANGUAGE=$2
+# print out script name
+echo -e "\n==== $0 ===="
+
+# split the language argument into country and lang
+# and take second part of the language argument
+split_language_arg_into_country_and_lang() {
+    # how to save the argument in a variable
+    # print the argument
+    local language=$LANGUAGE
+    echo $language | cut -d'-' -f1
+}
 
 # get the url from the config
 # to install ts-node to : npm install -D ts-node
@@ -41,21 +55,14 @@ get_lang_attribute_of_url() {
     echo $lang_attribute
 }
 
-# split the language argument into country and lang
-# and take second part of the language argument
-split_language_arg_into_country_and_lang() {
-    # how to save the argument in a variable
-    local language=$LANGUAGE
-    echo $language | cut -d'-' -f2
-}
-
+# check if the current URL is the same as the URL from the config
 compare_current_url_with_url_from_config() {
     # q: how to save the return value of a function in a variable
     local language=$(split_language_arg_into_country_and_lang $LANGUAGE)
     local base_url=$(get_base_url_from_config)
     local lang_attribute=$(get_lang_attribute_of_url $base_url)
-    echo "The language is >$language<"
-    echo "$(get_lang_attribute_of_url $base_url)"
+    echo "The language (arg) is: $language"
+    echo "started the shop of:   $(get_lang_attribute_of_url $base_url)"
     if [ "$language" = "$lang_attribute" ]; then
         echo "Starting the tests"
         npx playwright test --ui
@@ -64,5 +71,6 @@ compare_current_url_with_url_from_config() {
         exit 1
     fi
 }
-compare_current_url_with_url_from_config $LANGUAGE
-#split_language_arg_into_country_and_lang $LANGUAGE
+
+# call the function
+ compare_current_url_with_url_from_config $LANGUAGE
