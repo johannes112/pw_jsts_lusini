@@ -1,14 +1,18 @@
-import config from "../playwright.config";
-import { baseUrl } from "../data/config/index";
+import { baseUrl } from "/data/config/index";
+import { countryConfig } from "/data/config/index";
 import { BrowserContext } from "@playwright/test";
 import { getCurrentDate } from "./Functions";
 
 /** CustomCookies
  * description: Class to handle custom cookies
+ * get data from: config/index.ts
+ * args: contextCur: BrowserContext
+ * - set b2c cookies
+ * - set b2b cookies
+ * - close cookie banner
  * - add new cookies
  * - show all cookies
- * args: contextCur: BrowserContext
- * actions: setB2b, setB2c, closeCookieBanner, showAllExistingCookiesOfCurrentPage
+ * actions: set Cookies, get Cookies, show all Cookies
  */
 export default class CustomCookies {
   private static instance: CustomCookies;
@@ -49,17 +53,17 @@ export default class CustomCookies {
     };
   } = {
     b2b: {
-      name: "de-channel",
-      value: "b2b",
+      name: countryConfig.cookies.b2b.name,
+      value: countryConfig.cookies.b2b.value,
       url: baseUrl,
     },
     b2c: {
-      name: "de-channel",
-      value: "b2c",
+      name: countryConfig.cookies.b2c.name,
+      value: countryConfig.cookies.b2c.value,
       url: baseUrl,
     },
     cookieBanner: {
-      name: "OptanonAlertBoxClosed",
+      name: countryConfig.cookies.cookieBanner.name,
       value: getCurrentDate(),
       url: baseUrl,
     },

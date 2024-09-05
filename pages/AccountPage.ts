@@ -76,22 +76,14 @@ export default class Account implements PageObject {
 
   /** actions: Multisteps (related) */
   actions = {
-    insertUserData: async (user) => {
+    insertAndSendUserData: async (user) => {
       console.log("-> fillLoginForm");
       await this.page.fill(this.cssPathes.fieldEmailInput, user.email);
       await this.page.fill(this.cssPathes.fieldPasswordInput, user.password);
-      // await secureClick(this.page, this.cssPathes.buttonLogin);
-      // await this.elements.buttonLogin().click();
       this.actions.clickLoginButton();
-    },
-    clickIcon: async () => {
-      console.log("-> clickIcon");
-      // await GlobalFunctions.secureClick(this.cssPathes.accountIcon);
-      await this.elements.accountIcon().click();
     },
     clickLoginButton: async () => {
       console.log("-> clickLogin");
-      // await GlobalFunctions.secureClick(this.cssPathes.buttonLogin);
       await this.elements.buttonLogin().click();
     },
     waitForLoginUrl: async () => {
