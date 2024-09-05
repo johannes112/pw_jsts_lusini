@@ -20,4 +20,25 @@ export type Config = {
       url: string;
     };
   };
+  testdata: {
+    article: {
+      name: string;
+      articleNumber: string;
+      url: string;
+    };
+    user: {
+      firstname: string;
+      lastname: string;
+      email: string;
+      phone: string;
+      company: string;
+      street: string;
+      streetNumber: string;
+      zip: string;
+      city: string;
+      country: string;
+      vatId: string;
+      password: string;
+    };
+  };
 };

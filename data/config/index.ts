@@ -31,4 +31,25 @@ export const countryConfig: Config = {
       url: baseUrl,
     },
   },
+  testdata: {
+    article: {
+      name: "Teller flach Base",
+      articleNumber: "10082963",
+      url: "https://dev.lusini.com:8000/pdp/116366/",
+    },
+    user: {
+      firstname: "Vornane_test",
+      lastname: "Nachname_test",
+      email: "shoptest_de@lusini.com",
+      phone: "123456789",
+      company: "Firma_test",
+      street: "Strasse_test",
+      streetNumber: "0",
+      zip: "12345",
+      city: "Stadt_test",
+      country: "DE",
+      vatId: "DE123456789",
+      password: "cypress2024",
+    },
+  },
 };
