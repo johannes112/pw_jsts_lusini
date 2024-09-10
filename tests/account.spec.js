@@ -66,9 +66,23 @@ test.describe("template accountPage", () => {
       // negative test
       await expect(accountPage.elements.stateErrorPassword()).not.toBeVisible();
       // fill the login form
-      await accountPage.actions.insertAndSendUserData(
-        countryConfig.testdata.user
-      );
+      await accountPage.actions.insertUserData(countryConfig.testdata.user);
+      await accountPage.actions.clickLoginButton();
+      // expect the error message to be visible
+      await expect(accountPage.elements.stateErrorPassword()).toBeVisible({
+        timeout: 2000,
+      });
+    });
+  });
+  test.describe("with user login", () => {
+    test("register an user account", async ({ accountPage, page }) => {
+      // visit the accountpage
+      await page.goto(accountPage.urls.accountLogin);
+      // negative test
+      await expect(accountPage.elements.stateErrorPassword()).not.toBeVisible();
+      // fill the login form
+      await accountPage.actions.insertUserData(countryConfig.testdata.user);
+      await accountPage.actions.clickLoginButton();
       // expect the error message to be visible
       await expect(accountPage.elements.stateErrorPassword()).toBeVisible({
         timeout: 2000,
