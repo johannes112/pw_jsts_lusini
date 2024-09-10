@@ -3,7 +3,9 @@ import { PageObject } from "./PageObject";
 import config from "../playwright.config";
 import { Locator, Page } from "@playwright/test";
 import CustomCookies from "../helpers/Cookies";
-import { secureClick } from "../helpers/Functions";
+import { secureClick, secureRegisterWithData } from "../helpers/Functions";
+import { countryConfig } from "../data/config";
+import { register } from "module";
 
 export default class Account implements PageObject {
   private errorMessage: string;
@@ -54,10 +56,15 @@ export default class Account implements PageObject {
   cssPathes = {
     pageContext: '[data-cy-ctx="molecules/account/AccountLoginForm"]',
     formLoginMail: ".login-mail",
+    registerContext: '[data-cy-ctx="molecules/account/RegisterForm"]',
+    addressformContext: '[data-cy-ctx="templates/account/AddressFullfill"]',
     accountIcon: ".account",
     fieldEmailInput: '[data-cy-handle="email-input"]',
     fieldPasswordInput: '[data-cy-handle="password-input"]',
     buttonLogin: '[data-cy-handle="login-btn"]',
+    registerLink: '[data-cy-handle="register-link"]',
+    registerButton: '[data-cy-handle="register-btn"]',
+
     stateErrorPassword: '[data-cy-state="login-form-password-error"]',
   };
 
@@ -65,22 +72,26 @@ export default class Account implements PageObject {
   elements = {
     pageContext: () => this.page.locator(this.cssPathes.pageContext),
     formLoginMail: () => this.page.locator(this.cssPathes.formLoginMail),
+    registerContext: () => this.page.locator(this.cssPathes.registerContext),
+    addressformContext: () =>
+      this.page.locator(this.cssPathes.addressformContext),
     accountIcon: () => this.page.locator(this.cssPathes.accountIcon),
     fieldEmailInput: () => this.page.locator(this.cssPathes.fieldEmailInput),
     fieldPasswordInput: () =>
       this.page.locator(this.cssPathes.fieldPasswordInput),
     buttonLogin: () => this.page.locator(this.cssPathes.buttonLogin),
+    registerLink: () => this.page.locator(this.cssPathes.registerLink),
+    registerButton: () => this.page.locator(this.cssPathes.registerButton),
     stateErrorPassword: () =>
       this.page.locator(this.cssPathes.stateErrorPassword),
   };
 
   /** actions: Multisteps (related) */
   actions = {
-    insertAndSendUserData: async (user) => {
+    insertUserData: async (user) => {
       console.log("-> fillLoginForm");
       await this.page.fill(this.cssPathes.fieldEmailInput, user.email);
       await this.page.fill(this.cssPathes.fieldPasswordInput, user.password);
-      this.actions.clickLoginButton();
     },
     clickLoginButton: async () => {
       console.log("-> clickLogin");
@@ -100,6 +111,16 @@ export default class Account implements PageObject {
       console.log("-> clickToIcon");
       await secureClick(this.page, this.cssPathes.accountIcon);
     },
+    registerWithData: async (user) => {
+      console.log("=> secureRegisterWithData");
+      await secureRegisterWithData(
+        this.page,
+        this.cssPathes.registerButton,
+        this.cssPathes.fieldEmailInput,
+        this.cssPathes.fieldPasswordInput,
+        countryConfig.testdata.user
+      );
+    },
   };
 
   /** urls: relative http-pathes */
@@ -107,5 +128,7 @@ export default class Account implements PageObject {
     lusini: config.use?.baseURL,
     account: "account/",
     accountLogin: "account/login/",
+    accountRegister: "account/register/",
+    accountAddress: "account/address/",
   };
 }
