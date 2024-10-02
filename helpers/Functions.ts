@@ -121,3 +121,16 @@ export async function expectWithAnalysis(element, options) {
 
   // You can add more custom logic as needed
 }
+
+async function expectWithErrorIdentification(element, options, message) {
+  try {
+    await expect(element).toBeVisible(options);
+    console.log(`${message}: Expectation met.`);
+  } catch (error) {
+    const errorClass = await element.getAttribute("class");
+    console.error(
+      `${message}: Expectation not met. Error class: ${errorClass}`
+    );
+    throw error;
+  }
+}
