@@ -4,7 +4,10 @@ import { countryConfig } from "../data/config";
 // import { test, expect } from "@playwright/test";
 import { test, expect } from "./fixtures/testObjects.js";
 import CustomCookies from "../helpers/Cookies";
+import PointerClass from "../helpers/PointerClass";
+import PageWrapper from "../helpers/PageWrapper";
 
+const pointer = new PointerClass();
 test.describe("template accountPage", () => {
   test.skip("test cookies", async ({ accountPage, page }) => {
     const customCookies = new CustomCookies(page.context());
@@ -75,18 +78,33 @@ test.describe("template accountPage", () => {
     });
   });
   test.describe("with user login", () => {
-    test("register an user account", async ({ accountPage, page }) => {
+    test.only("register an user account", async ({ accountPage, page }) => {
+      const wrappedPage = new PageWrapper(page, pointer);
+      pointer.addFunctionCall("*** Test wrapped page");
       // visit the accountpage
-      await page.goto(accountPage.urls.accountLogin);
+      // await page.goto(accountPage.urls.accountLogin);
+      await wrappedPage.goto(accountPage.urls.accountLogin);
+      // epect to be on the accountLogin page
+      // await wrappedPage.expectUrlPart(accountPage.urls.accountLogin);
       // negative test
-      await expect(accountPage.elements.stateErrorPassword()).not.toBeVisible();
+      // await expect(accountPage.elements.stateErrorPassword()).not.toBeVisible();
+      await wrappedPage.expectStateErrorPasswordNotVisible(2000);
       // fill the login form
-      await accountPage.actions.insertUserData(countryConfig.testdata.user);
-      await accountPage.actions.clickLoginButton();
+      // await accountPage.actions.insertUserData(countryConfig.testdata.user);
+      await wrappedPage.insertUserData(countryConfig.testdata.user);
+      // await accountPage.actions.clickLoginButton();
+      await wrappedPage.clickLoginButton();
+      // expect the url has changed
+      await wrappedPage.expectUrlPart(accountPage.urls.accountLogin, false);
+      // expect the new url: account
+      await wrappedPage.expectUrl(accountPage.urls.account);
       // expect the error message to be visible
-      await expect(accountPage.elements.stateErrorPassword()).toBeVisible({
-        timeout: 2000,
-      });
+      // await wrappedPage.expectUrlPart(accountPage.urls.accountRegister, false);
+      // console.log("*Pointer: Function calls: ", pointer.getPreviousFunctionCall());
+      // await expect(accountPage.elements.stateErrorPassword()).toBeVisible({
+      //   timeout: 2000,
+      // });
+      // await wrappedPage.expectStateErrorPasswordVisible(2000);
     });
   });
 });
