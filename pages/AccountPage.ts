@@ -9,7 +9,7 @@ import { register } from "module";
 
 export default class Account implements PageObject {
   private errorMessage: string;
-  private page: Page;
+  protected page: Page;
   private customCookies: CustomCookies;
   private pageContext: Locator;
   private formLoginMail: Locator;
