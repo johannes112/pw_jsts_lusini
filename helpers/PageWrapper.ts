@@ -2,12 +2,20 @@ import { Page } from "playwright";
 import PointerClass from "./PointerClass";
 import accountPage from "../pages/AccountPage";
 import { expect } from "@playwright/test";
-import { get } from "http";
 
+/**
+ * @class PageWrapper
+ * @description Wrapper class for the page
+ * @purpose: Add additional functionality to the page
+ * @argument page (Page) - the page to wrap
+ * @argument pointer (PointerClass) - the pointer to store the function calls
+ * @action: Add additional functionality to the page
+ */
 class PageWrapper extends accountPage {
   //   private page: Page;
   private pointer: PointerClass;
   private accountPage: accountPage;
+  private counter: number = 0; // Initialize the counter
 
   constructor(page: Page, pointer: PointerClass) {
     super(page); // Call the super constructor with the 'page' argument
@@ -115,21 +123,85 @@ class PageWrapper extends accountPage {
     // const prevFunc = this.pointer.getPreviousFunctionCall(5);
     // get domain-url from the page
     const domainUrl = this.accountPage.urls.lusini;
-    if (not === false) {
-      // add an timeout until the new url appears
-      await this.page.waitForFunction(
-        (expectedURL) => window.location.href !== expectedURL,
-        url,
-        { timeout: 5000 }
+    try {
+      if (not === false) {
+        // add an timeout until the new url appears
+        await this.page.waitForFunction(
+          (expectedURL) => window.location.href !== expectedURL,
+          url,
+          { timeout: 5000 }
+        );
+        return;
+      }
+
+      // check if the url is equal to a specific url
+      await expect(this.page.url()).toBe(`${domainUrl}${url}`);
+    } catch (e) {
+      console.log("+- expectUrl: ", e);
+      await this.retryFunction();
+      await this.clickLoginButton();
+      await expect(this.page.url()).toBe(`${domainUrl}${url}`);
+    }
+  }
+
+  // retry executing the function of this class which is given by this.pointer.getPreviousFunctionCall("insert")
+  async retryFunction() {
+    // get the previous function call from the pointer identified by the function name
+    const prevFunc = this.pointer.getPreviousFunctionCall("insert");
+    console.log("+- retryFunction: ", prevFunc);
+
+    // Modify the functionArguments of the previous function call by manipulating the functionArguments
+    const modifiedArgs = await this.manipulateFunctionArguments(
+      prevFunc.functionArguments
+    );
+    console.log("+-- retryFunction: ", modifiedArgs);
+
+    // Log the URL to debug
+    console.log("+- retryFunction: original URL: ", prevFunc.url);
+
+    // Ensure the URL is properly formatted
+    const formattedUrl = prevFunc.url.trim().replace(/^"|"$/g, "");
+    console.log("+- retryFunction: formatted URL: ", formattedUrl);
+
+    // Check if the current URL is equal to the URL from the previous function call
+    if (this.page.url() === formattedUrl) {
+      console.log(
+        "+- retryFunction: ",
+        `${[prevFunc.functionName]}${JSON.parse(prevFunc.functionArguments)}`
       );
-      return;
+      await this[prevFunc.functionName](JSON.parse(prevFunc.functionArguments));
+    }
+    // Else go to the URL of the previous function call
+    else {
+      console.log("+- retryFunction: goto ", formattedUrl);
+      await this.page.goto(formattedUrl);
+      // Log the current URL of the page
+      console.log("++ current URL: ", this.page.url());
+      await this[prevFunc.functionName](JSON.parse(modifiedArgs));
+    }
+  }
+
+  // manipulate the functionArguments of the given args
+  async manipulateFunctionArguments(args: any) {
+    console.log("+-- manipulateFunctionArguments: ", args);
+
+    // Parse the args as a JSON object
+    let parsedArgs = JSON.parse(args);
+
+    // Iterate over the key-value pairs and prepend a random number to each value
+    for (let key in parsedArgs) {
+      if (parsedArgs.hasOwnProperty(key)) {
+        // Generate a random number
+        const randomNumber = Math.floor(Math.random() * 1000); // Adjust the range as needed
+        // Add the random number to the front of the string
+        parsedArgs[key] = `${randomNumber}${parsedArgs[key]}`;
+      }
     }
 
-    console.log(
-      `+-PrevFunc: ${prevFunc.functionName}, ${prevFunc.functionArguments}, ${prevFunc.url}`
-    );
-    // check if the url is equal to a specific url
-    await expect(this.page.url()).toBe(`${domainUrl}${url}`);
+    // Convert the modified arguments back to a JSON string
+    let newArgs = JSON.stringify(parsedArgs);
+    console.log("+-- manipulateFunctionArguments: ", newArgs);
+    return newArgs;
   }
 }
 
